@@ -71,6 +71,7 @@
 [data-theme="dark"] .badge-dinner { background: #1c1335; color: #b89cf5; }
 [data-theme="dark"] .badge-snack { background: #302508; color: #f5c842; }
 [data-theme="dark"] .badge-dessert { background: #30101a; color: #f28daf; }
+[data-theme="dark"] .badge-drink { background: #0a2520; color: #5cd4be; }
 
 /* Theme toggle */
 .theme-toggle {
@@ -269,6 +270,11 @@ body {
   text-align: center;
   padding: 48px 24px;
   color: var(--text-dim);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .pantry-empty-icon {
   font-size: 56px;
@@ -404,6 +410,7 @@ body {
 .badge-dinner { background: #ede7f6; color: #5e35b1; }
 .badge-snack { background: #fff8e1; color: #f57f17; }
 .badge-dessert { background: #fce4ec; color: #c2185b; }
+.badge-drink { background: #e0f2f1; color: #00695c; }
 
 .meal-tags {
   display: flex;

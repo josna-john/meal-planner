@@ -11,8 +11,8 @@ async function generateMealIdeas(pantryItems, options = {}) {
   } = options;
 
   const mealTypeInstruction = mealType === 'all'
-    ? 'Generate a mix of breakfast, lunch, dinner, dessert, and snack ideas.'
-    : `Generate ${mealType} ideas only.`;
+    ? 'Generate a mix of breakfast, lunch, dinner, dessert, snack, and drink ideas.'
+    : `Generate ${mealType} ideas only.${mealType === 'drink' ? ' Include a variety like lattes, smoothies, protein shakes, mocktails, and cocktails.' : ''}`;
 
   const dietaryInstruction = dietaryPrefs.length > 0
     ? `Dietary preferences for this request: ${dietaryPrefs.join(', ')}. Prioritize meals that fit these.`
@@ -58,7 +58,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no backticks, no
 [
   {
     "name": "Meal Name",
-    "type": "breakfast|lunch|dinner|snack|dessert",
+    "type": "breakfast|lunch|dinner|snack|dessert|drink",
     "servings": 2,
     "prepTime": "10 min",
     "cookTime": "15 min",
