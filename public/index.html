@@ -12,6 +12,42 @@
 </head>
 <body>
 
+  <!-- Onboarding -->
+  <div class="onboarding-overlay" id="onboarding">
+    <div class="onboarding-card">
+      <div class="onboarding-step" id="onboard-step-0">
+        <div class="onboard-icon">🍳</div>
+        <h2>Welcome to <span style="color:var(--accent);">Pantry</span> Planner</h2>
+        <p>AI-powered meal ideas, recipes, and planning — all from what's already in your kitchen.</p>
+      </div>
+      <div class="onboarding-step" id="onboard-step-1" style="display:none;">
+        <div class="onboard-icon">🥫</div>
+        <h2>Add Your Pantry</h2>
+        <p>Load your items from a file or add them one by one. We'll organize them into Fridge, Freezer, Pantry & Spices.</p>
+      </div>
+      <div class="onboarding-step" id="onboard-step-2" style="display:none;">
+        <div class="onboard-icon">🤖</div>
+        <h2>Get AI Recipes</h2>
+        <p>Pick a meal type, dietary preferences, and generate full recipes with macros, step-by-step instructions, and ingredients.</p>
+      </div>
+      <div class="onboarding-step" id="onboard-step-3" style="display:none;">
+        <div class="onboard-icon">📅</div>
+        <h2>Plan & Shop</h2>
+        <p>Add meals to your weekly planner, auto-generate a shopping list, track what you've cooked, and hit your macro goals.</p>
+      </div>
+      <div class="onboarding-dots">
+        <span class="onboard-dot active" data-step="0"></span>
+        <span class="onboard-dot" data-step="1"></span>
+        <span class="onboard-dot" data-step="2"></span>
+        <span class="onboard-dot" data-step="3"></span>
+      </div>
+      <button class="btn btn-generate" id="onboard-next" style="width:100%;margin-top:20px;">Next</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
   <!-- Header -->
   <div class="header" id="main-header">
     <div>
@@ -36,6 +72,17 @@
       <button class="btn" id="add-item-btn">+</button>
     </div>
 
+    <!-- Quick add suggestions -->
+    <div class="quick-add" id="quick-add">
+      <p class="section-label">Quick add</p>
+      <div class="quick-add-chips" id="quick-add-chips"></div>
+    </div>
+
+    <!-- Search/filter pantry -->
+    <div class="pantry-filter-bar">
+      <input type="text" id="pantry-search" placeholder="Search pantry..." autocomplete="off">
+    </div>
+
     <div class="pantry-actions">
       <button class="btn btn-sm btn-outline" id="load-default-btn">Load From File</button>
       <button class="btn btn-sm btn-outline" id="import-pantry-btn">Import</button>
@@ -44,8 +91,6 @@
     </div>
 
     <p class="pantry-count" id="pantry-count">0 items</p>
-
-    <!-- Category sections -->
     <div id="pantry-categories"></div>
   </div>
 
@@ -101,27 +146,38 @@
   <!-- ==================== PLANNER PAGE ==================== -->
   <div id="page-planner" class="page">
     <h2 class="page-title">Weekly Planner</h2>
-
     <div class="planner-nav">
       <button class="btn btn-sm btn-outline" id="planner-prev">&#8592;</button>
       <span class="planner-week-label" id="planner-week-label">This Week</span>
       <button class="btn btn-sm btn-outline" id="planner-next">&#8594;</button>
     </div>
-
     <div id="planner-days"></div>
-
     <div class="planner-actions">
       <button class="btn btn-sm btn-outline" id="view-shopping-list" style="width:100%;">🛒 View Shopping List</button>
     </div>
   </div>
 
-  <!-- ==================== SAVED PAGE ==================== -->
+  <!-- ==================== SAVED & HISTORY PAGE ==================== -->
   <div id="page-saved" class="page">
-    <h2 class="page-title">Saved Recipes</h2>
-    <div id="saved-container">
-      <div class="no-meals">
-        <div class="no-meals-icon">📌</div>
-        <p>No saved recipes yet. Generate meals and save the ones you like.</p>
+    <div class="sub-tabs">
+      <button class="sub-tab active" data-subtab="saved-recipes">Saved</button>
+      <button class="sub-tab" data-subtab="cook-history">History</button>
+    </div>
+    <div id="saved-recipes" class="sub-tab-content active">
+      <div id="saved-container">
+        <div class="no-meals">
+          <div class="no-meals-icon">📌</div>
+          <p>No saved recipes yet. Generate meals and save the ones you like.</p>
+        </div>
+      </div>
+    </div>
+    <div id="cook-history" class="sub-tab-content">
+      <div id="history-stats"></div>
+      <div id="history-container">
+        <div class="no-meals">
+          <div class="no-meals-icon">📝</div>
+          <p>No cooking history yet. Tap "Cooked It" on a recipe after you make it.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -129,7 +185,6 @@
   <!-- ==================== PROFILE PAGE ==================== -->
   <div id="page-profile" class="page">
     <h2 class="page-title">Profile</h2>
-
     <div class="profile-card">
       <h3>Dietary Restrictions</h3>
       <p class="profile-hint">Select any that apply. These will be respected in every meal generation.</p>
@@ -152,31 +207,14 @@
       </div>
       <div id="custom-restrictions-list" class="custom-restrictions-list"></div>
     </div>
-
     <div class="profile-card">
       <h3>Daily Macro Goals</h3>
       <p class="profile-hint">Set your daily targets. Meals will be optimized toward these.</p>
       <div class="macro-goals">
-        <div class="macro-goal-row">
-          <label>Calories</label>
-          <input type="number" id="goal-calories" placeholder="e.g. 2000">
-          <span class="macro-unit">kcal</span>
-        </div>
-        <div class="macro-goal-row">
-          <label>Protein</label>
-          <input type="number" id="goal-protein" placeholder="e.g. 150">
-          <span class="macro-unit">g</span>
-        </div>
-        <div class="macro-goal-row">
-          <label>Carbs</label>
-          <input type="number" id="goal-carbs" placeholder="e.g. 200">
-          <span class="macro-unit">g</span>
-        </div>
-        <div class="macro-goal-row">
-          <label>Fat</label>
-          <input type="number" id="goal-fat" placeholder="e.g. 65">
-          <span class="macro-unit">g</span>
-        </div>
+        <div class="macro-goal-row"><label>Calories</label><input type="number" id="goal-calories" placeholder="e.g. 2000"><span class="macro-unit">kcal</span></div>
+        <div class="macro-goal-row"><label>Protein</label><input type="number" id="goal-protein" placeholder="e.g. 150"><span class="macro-unit">g</span></div>
+        <div class="macro-goal-row"><label>Carbs</label><input type="number" id="goal-carbs" placeholder="e.g. 200"><span class="macro-unit">g</span></div>
+        <div class="macro-goal-row"><label>Fat</label><input type="number" id="goal-fat" placeholder="e.g. 65"><span class="macro-unit">g</span></div>
       </div>
       <button class="btn btn-sm" id="save-goals-btn" style="margin-top:12px;">Save Goals</button>
     </div>
@@ -215,26 +253,11 @@
 
   <!-- ==================== BOTTOM NAV ==================== -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-page="page-pantry">
-      <span class="nav-icon">🥫</span>
-      Pantry
-    </button>
-    <button class="nav-btn" data-page="page-meals">
-      <span class="nav-icon">🍽️</span>
-      Meals
-    </button>
-    <button class="nav-btn" data-page="page-planner">
-      <span class="nav-icon">📅</span>
-      Planner
-    </button>
-    <button class="nav-btn" data-page="page-saved">
-      <span class="nav-icon">📌</span>
-      Saved
-    </button>
-    <button class="nav-btn" data-page="page-profile">
-      <span class="nav-icon">👤</span>
-      Profile
-    </button>
+    <button class="nav-btn active" data-page="page-pantry"><span class="nav-icon">🥫</span>Pantry</button>
+    <button class="nav-btn" data-page="page-meals"><span class="nav-icon">🍽️</span>Meals</button>
+    <button class="nav-btn" data-page="page-planner"><span class="nav-icon">📅</span>Planner</button>
+    <button class="nav-btn" data-page="page-saved"><span class="nav-icon">📌</span>Saved</button>
+    <button class="nav-btn" data-page="page-profile"><span class="nav-icon">👤</span>Profile</button>
   </nav>
 
   <script src="meals.js"></script>
