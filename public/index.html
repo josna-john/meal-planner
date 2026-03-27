@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#faf8f5">
+  <title>Pantry Meal Planner</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h1><span>Pantry</span> Planner</h1>
+      <div class="header-sub">AI-powered recipes from your kitchen</div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">🌙</button>
+  </div>
+
+  <!-- ==================== PANTRY PAGE ==================== -->
+  <div id="page-pantry" class="page active">
+    <h2 class="page-title">Your Pantry</h2>
+
+    <div class="pantry-search">
+      <input type="text" id="add-item-input" placeholder="Add an item..." autocomplete="off">
+      <button class="btn" id="add-item-btn">+</button>
+    </div>
+
+    <div class="pantry-actions">
+      <button class="btn btn-sm btn-outline" id="load-default-btn">Load From File</button>
+      <button class="btn btn-sm btn-outline" id="import-pantry-btn">Import</button>
+      <button class="btn btn-sm btn-outline" id="export-pantry-btn">Export</button>
+      <button class="btn btn-sm btn-outline btn-danger" id="clear-pantry-btn">Clear All</button>
+    </div>
+
+    <p class="pantry-count" id="pantry-count">0 items in pantry</p>
+
+    <div class="pantry-list" id="pantry-list"></div>
+  </div>
+
+  <!-- ==================== MEALS PAGE ==================== -->
+  <div id="page-meals" class="page">
+    <h2 class="page-title">Meal Ideas</h2>
+
+    <p class="section-label">Meal type</p>
+    <div class="filters">
+      <button class="filter-chip active" data-type="all">All</button>
+      <button class="filter-chip" data-type="breakfast">Breakfast</button>
+      <button class="filter-chip" data-type="lunch">Lunch</button>
+      <button class="filter-chip" data-type="dinner">Dinner</button>
+      <button class="filter-chip" data-type="snack">Snack</button>
+      <button class="filter-chip" data-type="dessert">Dessert</button>
+    </div>
+
+    <p class="section-label">Preferences</p>
+    <div class="filters">
+      <button class="filter-chip" data-diet="high-protein">High Protein</button>
+      <button class="filter-chip" data-diet="low-carb">Low Carb</button>
+      <button class="filter-chip" data-diet="quick">Quick</button>
+      <button class="filter-chip" data-diet="vegetarian">Vegetarian</button>
+      <button class="filter-chip" data-diet="spicy">Spicy</button>
+      <button class="filter-chip" data-diet="comfort-food">Comfort</button>
+    </div>
+
+    <div class="tolerance-control">
+      <label>Missing ingredients OK:</label>
+      <select id="missing-tolerance">
+        <option value="0">None (pantry only)</option>
+        <option value="1">1 item</option>
+        <option value="2" selected>Up to 2</option>
+        <option value="3">Up to 3</option>
+      </select>
+    </div>
+
+    <div class="generate-btn-wrapper">
+      <button class="btn btn-generate" id="generate-btn">Generate Meal Ideas</button>
+    </div>
+
+    <div id="meals-container">
+      <div class="no-meals">
+        <div class="no-meals-icon">🍽️</div>
+        <p>Set up your pantry, pick your filters, and generate ideas.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-more" id="more-ideas-btn">More Ideas</button>
+  </div>
+
+  <!-- ==================== SAVED PAGE ==================== -->
+  <div id="page-saved" class="page">
+    <h2 class="page-title">Saved Recipes</h2>
+    <div id="saved-container">
+      <div class="no-meals">
+        <div class="no-meals-icon">📌</div>
+        <p>No saved recipes yet. Generate meals and save the ones you like.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM NAV ==================== -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="page-pantry">
+      <span class="nav-icon">🥫</span>
+      Pantry
+    </button>
+    <button class="nav-btn" data-page="page-meals">
+      <span class="nav-icon">🍽️</span>
+      Meals
+    </button>
+    <button class="nav-btn" data-page="page-saved">
+      <span class="nav-icon">📌</span>
+      Saved
+    </button>
+  </nav>
+
+  <script src="meals.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
