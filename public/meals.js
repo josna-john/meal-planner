@@ -1,4 +1,4 @@
-// AI-powered meal generation via server proxy (API key stored in .env)
+// AI-powered meal generation via server proxy (API key in .env)
 
 async function generateMealIdeas(pantryItems, options = {}) {
   const {
@@ -6,7 +6,8 @@ async function generateMealIdeas(pantryItems, options = {}) {
     dietaryPrefs = [],
     allowMissing = 2,
     count = 5,
-    excludeMeals = []
+    excludeMeals = [],
+    dietaryProfile = { restrictions: [], customRestrictions: [], goals: {} }
   } = options;
 
   const mealTypeInstruction = mealType === 'all'
@@ -14,11 +15,23 @@ async function generateMealIdeas(pantryItems, options = {}) {
     : `Generate ${mealType} ideas only.`;
 
   const dietaryInstruction = dietaryPrefs.length > 0
-    ? `Dietary preferences: ${dietaryPrefs.join(', ')}. Prioritize meals that fit these preferences.`
+    ? `Dietary preferences for this request: ${dietaryPrefs.join(', ')}. Prioritize meals that fit these.`
     : '';
 
   const excludeInstruction = excludeMeals.length > 0
     ? `Do NOT suggest these meals (already suggested): ${excludeMeals.join(', ')}`
+    : '';
+
+  // Dietary profile restrictions
+  const allRestrictions = [...(dietaryProfile.restrictions || []), ...(dietaryProfile.customRestrictions || [])];
+  const restrictionInstruction = allRestrictions.length > 0
+    ? `STRICT DIETARY RESTRICTIONS (must always be followed): ${allRestrictions.join(', ')}. Never include ingredients that violate these.`
+    : '';
+
+  // Macro goals
+  const goals = dietaryProfile.goals || {};
+  const goalInstruction = (goals.calories || goals.protein || goals.carbs || goals.fat)
+    ? `Target macros per serving: ${goals.calories ? goals.calories + ' cal' : ''}${goals.protein ? ', ' + goals.protein + 'g protein' : ''}${goals.carbs ? ', ' + goals.carbs + 'g carbs' : ''}${goals.fat ? ', ' + goals.fat + 'g fat' : ''}. Try to get close to these targets.`
     : '';
 
   const prompt = `You are a creative home chef meal planner. Based on the pantry items below, suggest exactly ${count} meal ideas with FULL recipes.
@@ -31,11 +44,14 @@ RULES:
 - Each meal should use as many pantry items as possible
 - It's OK if a meal needs up to ${allowMissing} ingredients NOT in the pantry — clearly mark those as "missing"
 - ${dietaryInstruction}
+- ${restrictionInstruction}
+- ${goalInstruction}
 - ${excludeInstruction}
 - Be creative and varied — different cuisines, cooking methods, flavors
 - Provide EXACT quantities for every ingredient (e.g. "2 tbsp soy sauce", "1 cup rice", "2 eggs")
 - Provide clear numbered step-by-step cooking instructions
-- Estimate realistic macros per serving
+- Calculate macros ACCURATELY based on the actual ingredient quantities in the recipe. Use real nutritional data (e.g. 1 egg = 6g protein/78 cal, 100g chicken breast = 31g protein/165 cal, 1 cup rice = 4g protein/206 cal). Do not estimate loosely — sum up each ingredient's contribution.
+- When "high-protein" is requested, aim for a 10:1 calorie-to-protein ratio (e.g. 500 cal meal should have ~50g protein). Prioritize protein-dense ingredients like eggs, chicken, steak, protein powder, greek yogurt, etc.
 - Specify how many servings the recipe makes
 
 Respond ONLY with valid JSON in this exact format (no markdown, no backticks, no explanation):

@@ -6,14 +6,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#faf8f5">
-  <title>Pantry Meal Planner</title>
+  <title>Pantry Planner</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- Header -->
-  <div class="header" style="display:flex;justify-content:space-between;align-items:center;">
+  <div class="header" id="main-header">
     <div>
       <h1><span>Pantry</span> Planner</h1>
       <div class="header-sub">AI-powered recipes from your kitchen</div>
@@ -27,6 +27,12 @@
 
     <div class="pantry-search">
       <input type="text" id="add-item-input" placeholder="Add an item..." autocomplete="off">
+      <select id="add-item-category" class="category-select">
+        <option value="pantry">Pantry</option>
+        <option value="fridge">Fridge</option>
+        <option value="freezer">Freezer</option>
+        <option value="spices">Spices</option>
+      </select>
       <button class="btn" id="add-item-btn">+</button>
     </div>
 
@@ -37,9 +43,10 @@
       <button class="btn btn-sm btn-outline btn-danger" id="clear-pantry-btn">Clear All</button>
     </div>
 
-    <p class="pantry-count" id="pantry-count">0 items in pantry</p>
+    <p class="pantry-count" id="pantry-count">0 items</p>
 
-    <div class="pantry-list" id="pantry-list"></div>
+    <!-- Category sections -->
+    <div id="pantry-categories"></div>
   </div>
 
   <!-- ==================== MEALS PAGE ==================== -->
@@ -90,6 +97,23 @@
     <button class="btn btn-more" id="more-ideas-btn">More Ideas</button>
   </div>
 
+  <!-- ==================== PLANNER PAGE ==================== -->
+  <div id="page-planner" class="page">
+    <h2 class="page-title">Weekly Planner</h2>
+
+    <div class="planner-nav">
+      <button class="btn btn-sm btn-outline" id="planner-prev">&#8592;</button>
+      <span class="planner-week-label" id="planner-week-label">This Week</span>
+      <button class="btn btn-sm btn-outline" id="planner-next">&#8594;</button>
+    </div>
+
+    <div id="planner-days"></div>
+
+    <div class="planner-actions">
+      <button class="btn btn-sm btn-outline" id="view-shopping-list" style="width:100%;">🛒 View Shopping List</button>
+    </div>
+  </div>
+
   <!-- ==================== SAVED PAGE ==================== -->
   <div id="page-saved" class="page">
     <h2 class="page-title">Saved Recipes</h2>
@@ -97,6 +121,93 @@
       <div class="no-meals">
         <div class="no-meals-icon">📌</div>
         <p>No saved recipes yet. Generate meals and save the ones you like.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE PAGE ==================== -->
+  <div id="page-profile" class="page">
+    <h2 class="page-title">Profile</h2>
+
+    <div class="profile-card">
+      <h3>Dietary Restrictions</h3>
+      <p class="profile-hint">Select any that apply. These will be respected in every meal generation.</p>
+      <div class="profile-checks" id="dietary-restrictions">
+        <label class="check-label"><input type="checkbox" value="no dairy"> No Dairy</label>
+        <label class="check-label"><input type="checkbox" value="no gluten"> No Gluten</label>
+        <label class="check-label"><input type="checkbox" value="no nuts"> No Nuts</label>
+        <label class="check-label"><input type="checkbox" value="no eggs"> No Eggs</label>
+        <label class="check-label"><input type="checkbox" value="no pork"> No Pork</label>
+        <label class="check-label"><input type="checkbox" value="no beef"> No Beef</label>
+        <label class="check-label"><input type="checkbox" value="no shellfish"> No Shellfish</label>
+        <label class="check-label"><input type="checkbox" value="vegetarian"> Vegetarian</label>
+        <label class="check-label"><input type="checkbox" value="vegan"> Vegan</label>
+        <label class="check-label"><input type="checkbox" value="halal"> Halal</label>
+        <label class="check-label"><input type="checkbox" value="kosher"> Kosher</label>
+      </div>
+      <div class="custom-restriction">
+        <input type="text" id="custom-restriction-input" placeholder="Other (e.g. no soy)...">
+        <button class="btn btn-sm" id="add-restriction-btn">Add</button>
+      </div>
+      <div id="custom-restrictions-list" class="custom-restrictions-list"></div>
+    </div>
+
+    <div class="profile-card">
+      <h3>Daily Macro Goals</h3>
+      <p class="profile-hint">Set your daily targets. Meals will be optimized toward these.</p>
+      <div class="macro-goals">
+        <div class="macro-goal-row">
+          <label>Calories</label>
+          <input type="number" id="goal-calories" placeholder="e.g. 2000">
+          <span class="macro-unit">kcal</span>
+        </div>
+        <div class="macro-goal-row">
+          <label>Protein</label>
+          <input type="number" id="goal-protein" placeholder="e.g. 150">
+          <span class="macro-unit">g</span>
+        </div>
+        <div class="macro-goal-row">
+          <label>Carbs</label>
+          <input type="number" id="goal-carbs" placeholder="e.g. 200">
+          <span class="macro-unit">g</span>
+        </div>
+        <div class="macro-goal-row">
+          <label>Fat</label>
+          <input type="number" id="goal-fat" placeholder="e.g. 65">
+          <span class="macro-unit">g</span>
+        </div>
+      </div>
+      <button class="btn btn-sm" id="save-goals-btn" style="margin-top:12px;">Save Goals</button>
+    </div>
+  </div>
+
+  <!-- ==================== COOK MODE OVERLAY ==================== -->
+  <div class="cook-mode-overlay" id="cook-mode">
+    <div class="cook-mode-header">
+      <button class="cook-mode-close" id="cook-mode-close">&times;</button>
+      <div class="cook-mode-title" id="cook-mode-title">Recipe Name</div>
+      <div class="cook-mode-progress" id="cook-mode-progress">Step 1 of 5</div>
+    </div>
+    <div class="cook-mode-body">
+      <div class="cook-mode-step" id="cook-mode-step">Step instruction here</div>
+    </div>
+    <div class="cook-mode-footer">
+      <button class="btn btn-outline cook-mode-btn" id="cook-prev">Previous</button>
+      <button class="btn cook-mode-btn" id="cook-next">Next Step</button>
+    </div>
+  </div>
+
+  <!-- ==================== SHOPPING LIST OVERLAY ==================== -->
+  <div class="shopping-overlay" id="shopping-overlay">
+    <div class="shopping-modal">
+      <div class="shopping-header">
+        <h2>Shopping List</h2>
+        <button class="cook-mode-close" id="shopping-close">&times;</button>
+      </div>
+      <div id="shopping-list-content"></div>
+      <div class="shopping-actions">
+        <button class="btn btn-sm btn-outline" id="copy-shopping-list">Copy to Clipboard</button>
+        <button class="btn btn-sm btn-outline" id="share-shopping-list">Share</button>
       </div>
     </div>
   </div>
@@ -111,9 +222,17 @@
       <span class="nav-icon">🍽️</span>
       Meals
     </button>
+    <button class="nav-btn" data-page="page-planner">
+      <span class="nav-icon">📅</span>
+      Planner
+    </button>
     <button class="nav-btn" data-page="page-saved">
       <span class="nav-icon">📌</span>
       Saved
+    </button>
+    <button class="nav-btn" data-page="page-profile">
+      <span class="nav-icon">👤</span>
+      Profile
     </button>
   </nav>
 
